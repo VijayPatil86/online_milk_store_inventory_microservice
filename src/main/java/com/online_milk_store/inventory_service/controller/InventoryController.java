@@ -1,5 +1,6 @@
 package com.online_milk_store.inventory_service.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.online_milk_store.inventory_service.service.InventoryService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/inventory-service/inventory")
@@ -27,13 +30,17 @@ public class InventoryController {
 	private InventoryService inventoryService;
 
 	@GetMapping("/milk-brand")
-	public ResponseEntity<List<String>> checkInventoryMilkBrands(@RequestParam Map<String, String> queryParams) {
+	public ResponseEntity<Map<String, Object>> checkInventoryMilkBrands(@RequestParam Map<String, String> queryParams,
+			HttpServletRequest request) {
 		LOGGER.debug("InventoryController.checkInventoryMilkBrands() --- START");
 		LOGGER.info("InventoryController.checkInventoryMilkBrands() --- queryParams: " + queryParams);
+		Map<String, Object> mapResponse = new HashMap<>();
 		List<String> listMilkBrandsIdsOutOfStock = inventoryService.checkInventoryMilkBrands(queryParams);
+		mapResponse.put("listMilkBrandsIdsOutOfStock", listMilkBrandsIdsOutOfStock);
+		mapResponse.put("inventory service port: ", request.getLocalPort());
 		LOGGER.info("InventoryController.checkInventoryMilkBrands() --- listMilkBrandsIdsOutOfStock: " + listMilkBrandsIdsOutOfStock);
 		LOGGER.debug("InventoryController.checkInventoryMilkBrands() --- END");
-		return new ResponseEntity<>(listMilkBrandsIdsOutOfStock, HttpStatus.OK);
+		return new ResponseEntity<>(mapResponse, HttpStatus.OK);
 	}
 
 	/*** Exception handling section ***/
